@@ -219,4 +219,14 @@ function creditExchange($credit1,$exchang){
 		}
 		return $credit2 = $credit1 * $to / $from;
 }
+function lntegral($Credit,$Marketprice){
+			if(preg_match('/([\d]*)%/',$Credit)){
+				$val = intval($Credit);
+				$from = 100;
+			}else if(preg_match('/[\d]*/',$Credit)){
+				$val = intval($Credit);
+				$from = intval($Credit);
+			}
+		return $statistics = $Marketprice * $Credit / $from;
+}
 ?>

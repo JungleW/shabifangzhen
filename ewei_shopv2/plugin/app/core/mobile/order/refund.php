@@ -1,9 +1,9 @@
-<?php
+﻿<?php
 
 if (!defined('IN_IA')) {
 	exit('Access Denied');
 }
- 
+
 require EWEI_SHOPV2_PLUGIN . 'app/core/page_mobile.php';
 class Refund_EweiShopV2Page extends AppMobilePage
 {
@@ -15,7 +15,6 @@ class Refund_EweiShopV2Page extends AppMobilePage
 		$openid = $_W['openid'];
 		$orderid = intval($_GPC['id']);
 		$order = pdo_fetch('select id,status,price,refundid,goodsprice,dispatchprice,deductprice,deductcredit2,finishtime,isverify,`virtual`,refundstate,merchid from ' . tablename('ewei_shop_order') . ' where id=:id and uniacid=:uniacid and openid=:openid limit 1', array(':id' => $orderid, ':uniacid' => $uniacid, ':openid' => $openid));
-
 		if (empty($order)) {
 			app_error(AppError::$OrderNotFound);
 		}
@@ -142,21 +141,34 @@ class Refund_EweiShopV2Page extends AppMobilePage
 		global $_W;
 		global $_GPC;
 		extract($this->globalData());
-
-		if ($order['status'] == '-1') {
-			show_json(0, '订单已经处理完毕!');
+		$ordersql='select goodsid, total from ' . tablename('ewei_shop_order_goods').' where orderid=:orderid';
+		$arr=pdo_fetchall($ordersql,array(':orderid'=>$orderid));
+		$awacredit=0;
+		foreach($arr as $value){
+			$goodsid=$value['goodsid'];
+			$goodsql='select credit from '.tablename('ewei_shop_goods').' where id='.$goodsid;
+			$credit=pdo_fetch($goodsql);
+			$awacredit += $credit['credit']*$value['total'];
 		}
 
+		$usersql='select credit1 from '.tablename('ewei_shop_member')." where openid=".'"'.$openid.'"';
+		$credit1 = pdo_fetch($usersql)['credit1'];	
+		$awacredit=intval($awacredit);
+		$credit1=intval($credit1);
+		if($awacredit <= $credit1){
+			if ($order['status'] == '-1') {
+				show_json(0, '订单已经处理完毕!');
+			}
 		$price = trim($_GPC['price']);
 		$rtype = intval($_GPC['rtype']);
 
 		if ($rtype != 2) {
 			if (empty($price) && ($order['deductprice'] == 0)) {
-				show_json(0, '退款金额不能为0元');
+				show_json(1, '退款金额不能为0元');
 			}
 
 			if ($order['refundprice'] < $price) {
-				show_json(0, '退款金额不能超过' . $order['refundprice'] . '元');
+				show_json(1, '退款金额不能超过' . $order['refundprice'] . '元');
 			}
 		}
 
@@ -182,9 +194,12 @@ class Refund_EweiShopV2Page extends AppMobilePage
 			pdo_update('ewei_shop_order', array('refundstate' => $refundstate), array('id' => $orderid, 'uniacid' => $uniacid));
 			pdo_update('ewei_shop_order_refund', $refund, array('id' => $refundid, 'uniacid' => $uniacid));
 		}
+		  m('notice')->sendOrderMessage($orderid, true);
+			app_json();
 
-		m('notice')->sendOrderMessage($orderid, true);
-		app_json();
+		}else{
+			show_json(1, '您的积分不足，无法退款!');
+		}
 	}
 
 	public function cancel()
@@ -199,7 +214,6 @@ class Refund_EweiShopV2Page extends AppMobilePage
 		pdo_update('ewei_shop_order', array('refundstate' => 0), array('id' => $orderid, 'uniacid' => $uniacid));
 		app_json();
 	}
-
 	public function express()
 	{
 		global $_W;

@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 if (!(defined('IN_IA'))) 
 {
 	exit('Access Denied');
@@ -41,6 +41,7 @@ class Refund_EweiShopV2Page extends WebPage
 		extract($opdata);
 		if ($_W['ispost']) 
 		{
+
 			$shopset = $_S['shop'];
 			if (empty($item['refundstate'])) 
 			{
@@ -61,6 +62,29 @@ class Refund_EweiShopV2Page extends WebPage
 			$time = time();
 			$change_refund = array();
 			$uniacid = $_W['uniacid'];
+			$orderid = intval($_GPC['id']);
+           	//退款时，判断两者（赠送积分和用户所拥有的积分）
+			$ordersql='select goodsid, total,openid from ' . tablename('ewei_shop_order_goods').' where orderid=:orderid';
+			$arr=pdo_fetchall($ordersql,array(':orderid'=>$orderid));
+			$openid='';
+			$awacredit=0;
+			foreach($arr as $value){
+				$goodsid=$value['goodsid'];
+				$goodsql='select credit from '.tablename('ewei_shop_goods').' where id='.$goodsid;
+				$credit=pdo_fetch($goodsql);
+				$awacredit += $credit['credit']*$value['total'];
+				$openid=$value['openid'];
+			}
+
+			$usersql='select credit1 from '.tablename('ewei_shop_member')." where openid=".'"'.$openid.'"';
+			$credit1 = pdo_fetch($usersql)['credit1'];	
+			$awacredit=intval($awacredit);
+			$credit1=intval($credit1);
+	  		////////////////////////////////////////////////
+	  		if($awacredit > $credit1){
+	  			show_json(3,"无法申请退款，积分不足。$credit1+$awacredit+$openid+$orderid");
+	  		}else{
+
 			if ($refundstatus == 0) 
 			{
 				show_json(1);
@@ -374,6 +398,7 @@ class Refund_EweiShopV2Page extends WebPage
 		}
 		$refund_address = pdo_fetchall('select * from ' . tablename('ewei_shop_refund_address') . ' where uniacid=:uniacid and merchid=0', array(':uniacid' => $_W['uniacid']));
 		$express_list = m('express')->getExpressList();
+		}
 		include $this->template();
 	}
 	public function main() 

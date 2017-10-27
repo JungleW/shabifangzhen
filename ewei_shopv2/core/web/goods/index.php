@@ -47,6 +47,11 @@ class Index_EweiShopV2Page extends WebPage
 			$_GPC['cate'] = intval($_GPC['cate']);
 			$condition .= ' AND FIND_IN_SET(' . $_GPC['cate'] . ',cates)<>0 ';
 		}
+		if (!(empty($_GPC['brand']))) 
+		{
+			$_GPC['brand'] = intval($_GPC['brand']);
+			$condition .= ' AND FIND_IN_SET(' . $_GPC['brand'] . ',brand)<>0 ';
+		}
 		$goodsfrom = strtolower(trim($_GPC['goodsfrom']));
 		empty($goodsfrom) && ($_GPC['goodsfrom'] = $goodsfrom = 'sale');
 		if ($goodsfrom == 'sale') 
@@ -101,6 +106,7 @@ class Index_EweiShopV2Page extends WebPage
 		{
 			$category[$cate['id']] = $cate;
 		}
+		$brand = m('shop')->getBrand(true);
 		include $this->template();
 	}
 	public function add() 

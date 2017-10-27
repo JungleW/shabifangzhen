@@ -14,7 +14,7 @@ class Credit_EweiShopV2Page extends AppMobilePage
 
 		$member = $this->member;
 		
-		//credit1Îª»ı·Ö   credit2Îª¿É¶Ò»»½ğ¶î
+		//credit1ä¸ºç§¯åˆ†   credit2ä¸ºå¯å…‘æ¢é‡‘é¢
 		$minCredit = 0;
 		$credit1 = $member['credit1'];
 		$credit2 = 0;

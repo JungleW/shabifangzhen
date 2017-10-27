@@ -32,7 +32,7 @@
 </ul>
 {/if}
 
-{ifp false && 'creditshop.log.order|creditshop.log.convey|creditshop.log.finish'}
+{ifp 'creditshop.log.order|creditshop.log.convey|creditshop.log.finish'}
     <div class='menu-header'>发货管理</div>
     <ul>
         {ifp 'creditshop.log.order'}

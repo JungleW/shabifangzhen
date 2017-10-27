@@ -57,15 +57,9 @@
                             <td>{$item['ordersn']}</td>
                         </tr>
                         <tr>
-                            {if $item['iscreditgoods']}
-                            <td>订单积分：</td>
-                            <td>{php echo number_format($item['price'],2)}积分 &nbsp;&nbsp;<a data-toggle='popover' data-html='true' data-placement='right'
-                                                                                           data-content="<table style='width:100%;'>
-                            {else} 
                             <td>订单金额：</td>
                             <td>￥{php echo number_format($item['price'],2)} &nbsp;&nbsp;<a data-toggle='popover' data-html='true' data-placement='right'
-                                                                                      data-content="<table style='width:100%;'>
-                            {/if}
+                                                                                           data-content="<table style='width:100%;'>
                 <tr>
                     <td  style='border:none;text-align:right;'>商品小计：</td>
                     <td  style='border:none;text-align:right;'>￥{php echo number_format( $item['goodsprice'] ,2)}</td>
@@ -733,7 +727,7 @@
                     <th style="width:200px">标题</th>
                     <th>规格/编号/条码</th>
                     <th style="text-align: center;">单价(元)/数量</th>
-                    <th style="text-align: center;">{if $item['ispackage']}商品价格(元/积分){else}折扣前:折扣后(元/积分){/if}</th>
+                    <th style="text-align: center;">{if $item['ispackage']}商品价格(元){else}折扣前/折扣后(元){/if}</th>
 
                     {if !empty($goods['diyformdata']) && $goods['diyformdata'] != 'false'}
                     <th style="width:80px;"></th>
@@ -755,12 +749,7 @@
                         <span class="text-error">[{$category[$goods['pcate']]['name']}] </span>{/if}{if $children[$goods['pcate']][$goods['ccate']][1]}
                         <span class="text-info">[{$children[$goods['pcate']][$goods['ccate']][1]}] </span>
                         {/if}
-                        {if $item['iscreditgoods']}
-                        <a target="_blank" href="{php echo webUrl('creditshop/goods/edit', array('id' => $goods['id']))}"title="   查看">
-                        {else}
-                        <a target="_blank" href="{php echo webUrl('goods/edit', array('id' => $goods['id']))}"title="   查看">
-                        {/if}
-                        {$goods['title']}</a>
+                        <a target="_blank" href="{php echo webUrl('goods/edit', array('id' => $goods['id']))}"title="查看">{$goods['title']}</a>
                         {if !empty($goods['invoice'])}<label class='label label-danger'>支持开票</label>{/if}
                     </td>
                     <td class='full'>
@@ -781,7 +770,7 @@
                         {if $item['ispackage']}
                             &yen;{php echo number_format($goods['marketprice'],2)}
                         {else}
-                            {$goods['orderprice']}:{$goods['realprice']}
+                            {$goods['orderprice']}/{$goods['realprice']}
                             {if intval($goods['changeprice'])!=0}
                             <br/>(改价{if $goods['changeprice']>0}+{/if}{php echo number_format(abs($goods['changeprice']),2)})
                             {/if}

@@ -192,21 +192,11 @@
 
         </td>
         <td  rowspan="{php echo count($item['goods'])}" style='text-align:center' >
-                {if $g['iscreditgoods']}
-               {php echo number_format($item['price'],2)}积分
-                {else}
-                ￥{php echo number_format($item['price'],2)}
-                {/if}
-
-             <a data-toggle='popover' data-html='true' data-placement='top'
+            ￥{php echo number_format($item['price'],2)} <a data-toggle='popover' data-html='true' data-placement='top'
                                                            data-content="<table style='width:100%;'>
                 <tr>
                     <td  style='border:none;text-align:right;'>商品小计：</td>
-                    {if $g['iscreditgoods']}
-                    <td  style='border:none;text-align:right;;'>{php echo number_format( $item['goodsprice'] ,2)}积分</td>
-                    {else}
                     <td  style='border:none;text-align:right;;'>￥{php echo number_format( $item['goodsprice'] ,2)}</td>
-                    {/if}
                 </tr>
                 <tr>
                     <td  style='border:none;text-align:right;'>运费：</td>
@@ -292,12 +282,8 @@
                 </tr>
                 {/if}
                 <tr>
-                    <td style='border:none;text-align:right;'>应收款：</td> 
-                    {if $g['iscreditgoods']}
-                    <td  style=`'border:none;text-align:right;color:green;'>{php echo number_format($item['price'],2)}积分</td> 
-                    {else}
-                    <td  style=`'border:none;text-align:right;color:green;'>￥{php echo number_format($item['price'],2)}</td> 
-                    {/if}
+                    <td style='border:none;text-align:right;'>应收款：</td>
+                    <td  style=`'border:none;text-align:right;color:green;'>￥{php echo number_format($item['price'],2)}</td>
                 </tr>
                
             </table>

@@ -14,13 +14,6 @@ class Detail_EweiShopV2Page extends WebPage
 		$item = pdo_fetch('SELECT * FROM ' . tablename('ewei_shop_order') . ' WHERE id = :id and uniacid=:uniacid', array(':id' => $id, ':uniacid' => $_W['uniacid']));
 		$item['statusvalue'] = $item['status'];
 		$item['paytypevalue'] = $item['paytype'];
-
-
-		$iscreditgoods = false;
-		if(preg_match('/^DH.*/', $item['ordersn'])){
-			$iscreditgoods = true;
-		}
-		$item['iscreditgoods'] = $iscreditgoods;
 		$order_goods = array();
 		if (0 < $item['sendtype']) 
 		{
@@ -65,12 +58,7 @@ class Detail_EweiShopV2Page extends WebPage
 		{
 			$diyformfields = ',o.diyformfields,o.diyformdata';
 		}
-
-		$sql = 'SELECT g.*, o.goodssn as option_goodssn, o.productsn as option_productsn,o.total,g.type,o.optionname,o.optionid,o.price as orderprice,o.realprice,o.changeprice,o.oldprice,o.commission1,o.commission2,o.commission3,o.commissions,o.seckill,o.seckill_taskid,o.seckill_roomid' . $diyformfields . ' FROM ' . tablename('ewei_shop_order_goods') . ' o left join ' . tablename('ewei_shop_goods') . ' g on o.goodsid=g.id ' . ' WHERE o.orderid=:orderid and o.uniacid=:uniacid';
-		if($iscreditgoods){
-			$sql = 'SELECT g.*, o.goodssn as option_goodssn, o.productsn as option_productsn,o.total,g.type,o.optionname,o.optionid,o.price as orderprice,o.realprice,o.changeprice,o.oldprice,o.commission1,o.commission2,o.commission3,o.commissions,o.seckill,o.seckill_taskid,o.seckill_roomid' . $diyformfields . ' FROM ' . tablename('ewei_shop_order_goods') . ' o left join ' . tablename('ewei_shop_creditshop_goods') . ' g on o.goodsid=g.id ' . ' WHERE o.orderid=:orderid and o.uniacid=:uniacid';
-		}
-		$goods = pdo_fetchall($sql, array(':orderid' => $id, ':uniacid' => $_W['uniacid']));
+		$goods = pdo_fetchall('SELECT g.*, o.goodssn as option_goodssn, o.productsn as option_productsn,o.total,g.type,o.optionname,o.optionid,o.price as orderprice,o.realprice,o.changeprice,o.oldprice,o.commission1,o.commission2,o.commission3,o.commissions,o.seckill,o.seckill_taskid,o.seckill_roomid' . $diyformfields . ' FROM ' . tablename('ewei_shop_order_goods') . ' o left join ' . tablename('ewei_shop_goods') . ' g on o.goodsid=g.id ' . ' WHERE o.orderid=:orderid and o.uniacid=:uniacid', array(':orderid' => $id, ':uniacid' => $_W['uniacid']));
 		$is_merch = false;
 		foreach ($goods as &$r ) 
 		{

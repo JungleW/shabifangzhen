@@ -302,15 +302,8 @@ class List_EweiShopV2Page extends WebPage
 		{
 			$diy_title_data = array();
 			$diy_data = array();
-			$iscreditgoods = false;
 			foreach ($list as &$value ) 
 			{
-				if(preg_match('/^DH.*/', $value['ordersn'])){
-					$iscreditgoods = true;
-				}else{
-					$iscreditgoods = false;
-				}
-
 				if ($is_merchname == 1) 
 				{
 					$value['merchname'] = (($merch_user[$value['merchid']]['merchname'] ? $merch_user[$value['merchid']]['merchname'] : ''));
@@ -430,20 +423,10 @@ class List_EweiShopV2Page extends WebPage
 				{
 					$magent = m('member')->getMember($agentid);
 				}
-				$sql = 'select g.id,g.title,g.thumb,g.goodssn,og.goodssn as option_goodssn, g.productsn,og.productsn as option_productsn, og.total,' . "\r\n" . '                    og.price,og.optionname as optiontitle, og.realprice,og.changeprice,og.oldprice,og.commission1,og.commission2,og.commission3,og.commissions,og.diyformdata,' . "\r\n" . '                    og.diyformfields,op.specs,g.merchid,og.seckill,og.seckill_taskid,og.seckill_roomid,g.ispresell from ' . tablename('ewei_shop_order_goods') . ' og ' . ' left join ' . tablename('ewei_shop_goods') . ' g on g.id=og.goodsid ' . ' left join ' . tablename('ewei_shop_goods_option') . ' op on og.optionid = op.id ' . ' where og.uniacid=:uniacid and og.orderid=:orderid ';
-
-				if($iscreditgoods){
-					$sql = 'select g.id,g.title,g.thumb,g.goodssn,og.goodssn as option_goodssn, g.productsn,og.productsn as option_productsn, og.total,' . "\r\n" . '                    og.price,og.optionname as optiontitle, og.realprice,og.changeprice,og.oldprice,og.commission1,og.commission2,og.commission3,og.commissions,og.diyformdata,' . "\r\n" . '                    og.diyformfields, g.merchid,og.seckill,og.seckill_taskid,og.seckill_roomid from ' . tablename('ewei_shop_order_goods') . ' og ' . ' left join ' . tablename('ewei_shop_creditshop_goods') . ' g on g.id=og.goodsid ' . ' where og.uniacid=:uniacid and og.orderid=:orderid ';
-				}
-
-				$order_goods = pdo_fetchall($sql, array(':uniacid' => $uniacid, ':orderid' => $value['id']));
-
+				$order_goods = pdo_fetchall('select g.id,g.title,g.thumb,g.goodssn,og.goodssn as option_goodssn, g.productsn,og.productsn as option_productsn, og.total,' . "\r\n" . '                    og.price,og.optionname as optiontitle, og.realprice,og.changeprice,og.oldprice,og.commission1,og.commission2,og.commission3,og.commissions,og.diyformdata,' . "\r\n" . '                    og.diyformfields,op.specs,g.merchid,og.seckill,og.seckill_taskid,og.seckill_roomid,g.ispresell from ' . tablename('ewei_shop_order_goods') . ' og ' . ' left join ' . tablename('ewei_shop_goods') . ' g on g.id=og.goodsid ' . ' left join ' . tablename('ewei_shop_goods_option') . ' op on og.optionid = op.id ' . ' where og.uniacid=:uniacid and og.orderid=:orderid ', array(':uniacid' => $uniacid, ':orderid' => $value['id']));
 				$goods = '';
 				foreach ($order_goods as &$og ) 
 				{
-					if($iscreditgoods){
-						$og['iscreditgoods'] = true;	
-					}
 					$og['seckill_task'] = false;
 					$og['seckill_room'] = false;
 					if ($og['seckill']) 

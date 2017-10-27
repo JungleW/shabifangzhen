@@ -1,57 +1,57 @@
 <?php
-if (!(defined('IN_IA'))) 
+if (!(defined('IN_IA')))
 {
 	exit('Access Denied');
 }
-class Recharge_EweiShopV2Page extends WebPage 
+class Recharge_EweiShopV2Page extends WebPage
 {
-	public function main() 
+	public function main()
 	{
 		global $_W;
 		global $_GPC;
 		$type = trim($_GPC['type']);
-		if (!(cv('finance.recharge.' . $type))) 
+		if (!(cv('finance.recharge.' . $type)))
 		{
 			$this->message('你没有相应的权限查看');
 		}
 		$id = intval($_GPC['id']);
 		$profile = m('member')->getMember($id, true);
-		if ($_W['ispost']) 
+		if ($_W['ispost'])
 		{
 			$typestr = (($type == 'credit1' ? '积分' : '余额'));
 			$num = floatval($_GPC['num']);
 			$remark = trim($_GPC['remark']);
-			if ($num <= 0) 
+			if ($num <= 0)
 			{
 				show_json(0, array('message' => '请填写大于0的数字!'));
 			}
 			$changetype = intval($_GPC['changetype']);
-			if ($changetype == 2) 
+			if ($changetype == 2)
 			{
 				$num -= $profile[$type];
 			}
-			else if ($changetype == 1) 
+			else if ($changetype == 1)
 			{
 				$num = -$num;
 			}
 			m('member')->setCredit($profile['openid'], $type, $num, array($_W['uid'], '后台会员充值' . $typestr . ' ' . $remark));
 			$changetype = 0;
 			$changenum = 0;
-			if (0 <= $num) 
+			if (0 <= $num)
 			{
 				$changetype = 0;
 				$changenum = $num;
 			}
-			else 
+			else
 			{
 				$changetype = 1;
 				$changenum = -$num;
 			}
-			if ($type == 'credit1') 
+			if ($type == 'credit1')
 			{
 				m('notice')->sendMemberPointChange($profile['openid'], $changenum, $changetype);
 			}
-			if ($type == 'credit2') 
+			if ($type == 'credit2')
 			{
 				$set = m('common')->getSysset('shop');
 				$logno = m('common')->createNO('member_log', 'logno', 'RC');

@@ -197,88 +197,6 @@ class Cart_EweiShopV2Page extends AppMobilePage
         app_json(array('isnew' => false, 'cartcount' => $cartcount));
     }
 
-
-//    ******************************************************************
-    public function change_num()
-    {
-        global $_W;
-        global $_GPC;
-        $id = intval($_GPC['id']);
-        $total = intval($_GPC['total']);
-
-        if (empty($id)) {
-            app_error(AppError::$ParamsError);
-        }
-
-        $optionid = intval($_GPC['optionid']);
-        $goods = pdo_fetch('select id,marketprice,diyformid,diyformtype,diyfields, isverify, type,merchid from ' . tablename('ewei_shop_goods') . ' where id=:id and uniacid=:uniacid limit 1', array(':id' => $id, ':uniacid' => $_W['uniacid']));
-
-        if (empty($goods)) {
-            app_error(AppError::$GoodsNotFound);
-        }
-
-        if (($goods['isverify'] == 2) || ($goods['type'] == 2) || ($goods['type'] == 3)) {
-            app_error(AppError::$NotAddCart);
-        }
-
-        $diyform_plugin = p('diyform');
-        $diyformid = 0;
-        $diyformfields = iserializer(array());
-        $diyformdata = iserializer(array());
-
-        if ($diyform_plugin) {
-            $diyformdata = $_GPC['diyformdata'];
-
-            if (is_string($diyformdata)) {
-                $diyformdatastring = htmlspecialchars_decode(str_replace('\\', '', $_GPC['diyformdata']));
-                $diyformdata = @json_decode($diyformdatastring, true);
-            }
-
-            if (!empty($diyformdata) && is_array($diyformdata)) {
-                $diyformfields = false;
-
-                if ($goods['diyformtype'] == 1) {
-                    $diyformid = intval($goods['diyformid']);
-                    $formInfo = $diyform_plugin->getDiyformInfo($diyformid);
-
-                    if (!empty($formInfo)) {
-                        $diyformfields = $formInfo['fields'];
-                    }
-                }
-                else {
-                    if ($goods['diyformtype'] == 2) {
-                        $diyformfields = iunserializer($goods['diyfields']);
-                    }
-                }
-
-                if (!empty($diyformfields)) {
-                    $insert_data = $diyform_plugin->getInsertData($diyformfields, $diyformdata, true);
-                    $diyformdata = $insert_data['data'];
-                    $diyformfields = iserializer($diyformfields);
-                }
-            }
-        }
-
-        $data = pdo_fetch('select id,total,diyformid from ' . tablename('ewei_shop_member_cart') . ' where goodsid=:id and openid=:openid and   optionid=:optionid  and deleted=0 and  uniacid=:uniacid   limit 1', array(':uniacid' => $_W['uniacid'], ':openid' => $_W['openid'], ':optionid' => $optionid, ':id' => $id));
-
-        if (empty($data)) {
-            $data = array('uniacid' => $_W['uniacid'], 'merchid' => $goods['merchid'], 'openid' => $_W['openid'], 'goodsid' => $id, 'optionid' => $optionid, 'marketprice' => $goods['marketprice'], 'total' => $total, 'selected' => 1, 'diyformid' => $diyformid, 'diyformdata' => $diyformdata, 'diyformfields' => $diyformfields, 'createtime' => time());
-            pdo_insert('ewei_shop_member_cart', $data);
-        }
-        else {
-            $data['diyformid'] = $diyformid;
-            $data['diyformdata'] = $diyformdata;
-            $data['diyformfields'] = $diyformfields;
-            $data['total'] += $total;
-            pdo_update('ewei_shop_member_cart', $data, array('id' => $data['id']));
-        }
-
-        $cartcount = pdo_fetchcolumn('select sum(total) from ' . tablename('ewei_shop_member_cart') . ' where openid=:openid and deleted=0 and uniacid=:uniacid limit 1', array(':uniacid' => $_W['uniacid'], ':openid' => $_W['openid']));
-
-        app_json(array('isnew' => false, 'cartcount' => $cartcount));
-    }
-
-
     public function minus()
     {
         global $_W;
@@ -437,7 +355,7 @@ class Cart_EweiShopV2Page extends AppMobilePage
         if (empty($ids)) {
             app_error(AppError::$ParamsError);
         }
-
+        
         $sql = 'update ' . tablename('ewei_shop_member_cart') . ' set deleted=1 where uniacid=:uniacid and openid=:openid and id='.$ids;
 
         pdo_query($sql, array(':uniacid' => $_W['uniacid'], ':openid' => $_W['openid']));

@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 if (!defined('IN_IA')) {
 	exit('Access Denied');
@@ -78,7 +78,7 @@ class Index_EweiShopV2Page extends AppMobilePage
 		$list = pdo_fetchall('select id,ordersn,price,userdeleted,isparent,refundstate,paytype,status,addressid,refundid,isverify,dispatchtype,verifytype,verifyinfo,verifycode,iscomment from ' . tablename('ewei_shop_order') . ' where 1 ' . $condition . ' order by createtime desc LIMIT ' . (($pindex - 1) * $psize) . ',' . $psize, $params);
 		$total = pdo_fetchcolumn('select count(*) from ' . tablename('ewei_shop_order') . ' where 1 ' . $condition, $params);
 		$refunddays = intval($_W['shopset']['trade']['refunddays']);
-		
+
 		if ($is_openmerch == 1) {
 			$merch_user = $merch_plugin->getListUser($list, 'merch_user');
 		}
@@ -230,8 +230,7 @@ class Index_EweiShopV2Page extends AppMobilePage
 
 			$row['statusstr'] = $status;
 			$row['statuscss'] = $statuscss;
-			///修改0 < $row['refundstate']
-			if ((1 == $row['refundstate']) && !empty($row['refundid'])) {
+			if ((0 < $row['refundstate']) && !empty($row['refundid'])) {
 				$refund = pdo_fetch('select * from ' . tablename('ewei_shop_order_refund') . ' where id=:id and uniacid=:uniacid and orderid=:orderid limit 1', array(':id' => $row['refundid'], ':uniacid' => $uniacid, ':orderid' => $row['id']));
 
 				if (!empty($refund)) {

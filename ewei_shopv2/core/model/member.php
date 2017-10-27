@@ -307,6 +307,7 @@ class Member_EweiShopV2Model
 
 			pdo_update('ewei_shop_member', array($credittype => $newcredit), array('uniacid' => $_W['uniacid'], 'openid' => $openid));
 			$log_data['remark'] = $log_data['remark'] . ' OPENID: ' . $openid;
+			$log_data['openid'] = $openid;
 		}
 
 		pdo_insert('mc_credits_record', $log_data);

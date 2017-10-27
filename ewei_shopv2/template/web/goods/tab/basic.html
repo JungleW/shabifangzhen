@@ -1,4 +1,4 @@
-﻿<div class="form-group">
+<div class="form-group">
     <label class="col-sm-2 control-label">排序</label>
     <div class="col-sm-9 col-xs-12">
         {ife 'goods' $item}
@@ -341,18 +341,6 @@
         {/if}
     </div>
 </div>
-<div class="form-group splitter"></div>
-<div class="form-group">
-    <label class="col-sm-2 control-label">赠送积分</label>
-    <div class="col-sm-6 col-xs-12">
-        <div class="input-group">
-            <input type="text" name="changeCredit" id="changeCredit" class="form-control" value="{$item['credit']}" />
-            <span class="input-group-addon">积分</span>
-        </div>
-        <span class="help-block">购买赠送积分，如果带%号，则为按成交价比例计算</span>
-    </div>
-</div>
-
 
 
 <div class="form-group interval"  {if $item['type']!=4}  style="display: none"{/if} >

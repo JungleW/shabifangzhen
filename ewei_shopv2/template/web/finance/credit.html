@@ -87,7 +87,7 @@
         {/if}
 
         </td>
-        <td>{$row['realname']}<br/>{$row['mobile']}</td>
+        <td data-toggle='popover' data-html='true' data-placement='top' data-trigger='hover' data-content='{$row['openid']}'>{$row['openid']}</td>
         <td>{$row['num']}</td>
         <td data-toggle='popover' data-html='true' data-placement='top' data-trigger='hover' data-content='{$row['remark']}'>{$row['remark']}</td>
         <td>{if empty($row['username'])}本人{else}{$row['username']}{/if}</td>
